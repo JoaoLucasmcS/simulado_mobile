@@ -52,6 +52,7 @@ export default function App() {
             <News
               key={item.id.toString()}
               title={item.title}
+              summary={item.summary}
               image={item.image}
               published={item.published}
               link={item.link}

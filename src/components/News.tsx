@@ -6,9 +6,10 @@ interface NewsProps {
   image?: string | null;
   published: string;
   link: string;
+  summary: string;
 }
 
-export default function News({ title, image, published, link }: NewsProps) {
+export default function News({ title, image, published, link, summary}: NewsProps) {
   const handlePress = async () => {
     try {
       const supported = await Linking.canOpenURL(link);
@@ -26,11 +27,12 @@ export default function News({ title, image, published, link }: NewsProps) {
     <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
       {image ? (
         <Image style={styles.image} source={{ uri: image }} resizeMode="cover" />
-      ) : null}
+      ) : <View></View>}
       
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.date}>{published}</Text>
+        <Text numberOfLines={2} style={styles.summary}>{summary}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -60,6 +62,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
     color: '#333',
+  },
+  summary: {
+    fontSize: 15,
+    marginBottom: 8,
+    color: '#484D50',
   },
   date: {
     fontSize: 14,
