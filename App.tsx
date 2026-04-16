@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import { StatusBar }  from 'expo-status-bar';
 import { StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as sb_react} from 'react-native';
-import News from './src/components/News';
+import {News} from './src/components/News';
 
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
 import {globalStyles} from "./src/styles/global";
@@ -36,6 +36,12 @@ export default function App() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Últimas notícias</Text>
       </View>
+      {!loading && !error && (
+          <Text style={styles.counterText}>
+            Notícias Carregadas : {newsList.length}
+          </Text>
+      )
+      }
 
       {loading ? (
         <View style={styles.centerContainer}>
@@ -108,4 +114,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
+  counterText: {
+    fontSize: 12,
+    color: "000000",
+    padding: 8,
+  }
 });

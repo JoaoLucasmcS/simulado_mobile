@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 
 interface NewsProps {
@@ -6,10 +6,11 @@ interface NewsProps {
   image?: string | null;
   published: string;
   link: string;
-  summary: string;
+  summary?: string;
 }
 
-export default function News({ title, image, published, link, summary}: NewsProps) {
+export function News({title, image, published, link, summary}: NewsProps) {
+  const [imageError, setImageError] = useState<boolean>(false);
   const handlePress = async () => {
     try {
       const supported = await Linking.canOpenURL(link);
@@ -24,17 +25,29 @@ export default function News({ title, image, published, link, summary}: NewsProp
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
-      {image ? (
-        <Image style={styles.image} source={{ uri: image }} resizeMode="cover" />
-      ) : <View></View>}
-      
-      <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.date}>{published}</Text>
-        <Text numberOfLines={2} style={styles.summary}>{summary}</Text>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
+        {image ? (
+            imageError ? (
+                <View style={styles.imageFallback}>
+                  <Text style={styles.textFallback}>Sem imagem</Text>
+                </View>
+            ) : (
+                <Image
+                    style={styles.image}
+                    source={{ uri: image }}
+                    resizeMode="cover"
+                    onError={() => setImageError(true)}
+                />
+            )
+        ) : null}
+        <View style={styles.content}>
+          <Text style={styles.title}>{title}</Text>
+          {summary ? (
+              <Text numberOfLines={2} style={styles.summary}>{summary}</Text>
+          ) : null}
+          <Text style={styles.date}>{published}</Text>
+        </View>
+      </TouchableOpacity>
   );
 }
 
@@ -72,4 +85,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
+  imageFallback: {
+    width: '100%',
+    height: 180,
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textFallback: {
+    color: '100%',
+    fontWeight: 'bold',
+  }
 });
