@@ -1,15 +1,14 @@
-import React, { useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { StatusBar }  from 'expo-status-bar';
 import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   SafeAreaView,
   ActivityIndicator,
   Platform,
   StatusBar as sb_react,
-  FlatList
+  FlatList, TextInput, TouchableOpacity
 } from 'react-native';
 import {News} from './src/components/News';
 
@@ -20,10 +19,32 @@ export default function App() {
   const [newsList, setNewsList] = useState<NewsData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
 
   useEffect(() => {
     fetchNews();
   }, []);
+
+  const filteredAndSortedNews = useMemo(() => {
+    let result = newsList;
+
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((news) =>
+          news.title.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    result = [...result].sort((a, b) => {
+      const dateA = new Date(a.published).getTime();
+      const dateB = new Date(b.published).getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    return result;
+  }, [newsList, searchQuery, sortOrder]);
 
   const fetchNews = async () => {
     try {
@@ -45,10 +66,32 @@ export default function App() {
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Últimas notícias</Text>
+        <TextInput
+            placeholder={"Buscar notícias..."}
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+        />
+        <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortOrder === 'asc' && styles.sortButtonActive
+            ]}
+            onPress={() => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
+        >
+          <Text
+              style={[
+                styles.sortButtonText,
+                sortOrder === 'asc' && styles.sortButtonTextActive
+              ]}
+          >
+            {sortOrder === 'asc' ? '↑ Mais antigas' : '↓ Mais recentes'}
+          </Text>
+        </TouchableOpacity>
       </View>
       {!loading && !error && (
           <Text style={styles.counterText}>
-            Notícias Carregadas : {newsList.length}
+            {filteredAndSortedNews.length} notícias encontradas
           </Text>
       )
       }
@@ -64,7 +107,7 @@ export default function App() {
         </View>
       ) : (
           <FlatList
-              data={newsList}
+              data={filteredAndSortedNews}
               keyExtractor={(item) => item.id.toString()}
               contentContainerStyle={styles.scrollContent}
               renderItem={({ item }) => (
@@ -154,5 +197,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  searchInput: {
+    width: '100%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginTop: 12,
+    backgroundColor: '#fff',
+  },
+  sortButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    width: '100%',
+  },
+  sortButtonActive: {
+    backgroundColor: '#007bff',
+  },
+  sortButtonText: {
+    color: '#333',
+    fontWeight: '600',
+  },
+  sortButtonTextActive: {
+    color: '#fff',
   },
 });
