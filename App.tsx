@@ -1,6 +1,16 @@
 import React, { useState, useEffect} from 'react';
 import { StatusBar }  from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as sb_react} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  SafeAreaView,
+  ActivityIndicator,
+  Platform,
+  StatusBar as sb_react,
+  FlatList
+} from 'react-native';
 import {News} from './src/components/News';
 
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
@@ -32,7 +42,7 @@ export default function App() {
       <StatusBar
           style="dark"
       />
-      
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Últimas notícias</Text>
       </View>
@@ -53,19 +63,26 @@ export default function App() {
           <Text style={styles.errorText}>Erro: {error}</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {newsList.map((item) => (
-            <News
-              key={item.id.toString()}
-              title={item.title}
-              summary={item.summary}
-              image={item.image}
-              published={item.published}
-              link={item.link}
-            />
-          ))}
-        </ScrollView>
-      )}
+          <FlatList
+              data={newsList}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={styles.scrollContent}
+              renderItem={({ item }) => (
+                <News
+                    title={item.title}
+                    summary={item.summary}
+                    image={item.image}
+                    published={item.published}
+                    link={item.link}
+                />
+            )}
+              ItemSeparatorComponent={() => <View style={styles.itemSeparatorContent}></View>}
+              ListEmptyComponent={() =>
+                  <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>Nenhuma notícia disponível no momento.</Text>
+                  </View>}
+          />
+          )}
     </SafeAreaView>
   );
 }
@@ -115,8 +132,27 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   counterText: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 4,
     fontSize: 12,
-    color: "000000",
-    padding: 8,
-  }
+    color: '#000000',
+    fontWeight: '500',
+  },
+  itemSeparatorContent: {
+    height: 1,
+    backgroundColor: "#e0e0e0",
+    marginHorizontal: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
 });
