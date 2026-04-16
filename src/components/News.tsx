@@ -7,25 +7,14 @@ interface NewsProps {
   published: string;
   link: string;
   summary?: string;
+  onPress?: () => void;
 }
 
-export function News({title, image, published, link, summary}: NewsProps) {
+export function News({ title, image, published, link, summary, onPress }: NewsProps) {
   const [imageError, setImageError] = useState<boolean>(false);
-  const handlePress = async () => {
-    try {
-      const supported = await Linking.canOpenURL(link);
-      if (supported) {
-        await Linking.openURL(link);
-      } else {
-        console.warn(`Não foi possível abrir a URL: ${link}`);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
-      <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
         {image ? (
             imageError ? (
                 <View style={styles.imageFallback}>

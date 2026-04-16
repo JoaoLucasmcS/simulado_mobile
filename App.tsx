@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
   Platform,
   StatusBar as sb_react,
-  FlatList, TextInput, TouchableOpacity
+  FlatList, TextInput, TouchableOpacity, Modal
 } from 'react-native';
 import {News} from './src/components/News';
-
+import NewsDetail from './src/components/NewsDetail';
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
 import {globalStyles} from "./src/styles/global";
 
@@ -21,6 +21,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedNews, setSelectedNews] = useState<NewsData | null>(null);
 
 
   useEffect(() => {
@@ -117,6 +118,7 @@ export default function App() {
                     image={item.image}
                     published={item.published}
                     link={item.link}
+                    onPress={() => setSelectedNews(item)}
                 />
             )}
               ItemSeparatorComponent={() => <View style={styles.itemSeparatorContent}></View>}
@@ -126,6 +128,16 @@ export default function App() {
                   </View>}
           />
           )}
+      <Modal
+          visible={selectedNews !== null}
+          animationType="slide"
+          onRequestClose={() => setSelectedNews(null)}
+      >
+        <NewsDetail
+            news={selectedNews}
+            onClose={() => setSelectedNews(null)}
+        />
+      </Modal>
     </SafeAreaView>
   );
 }
