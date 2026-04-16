@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "news-app-expo",
-    "slug": "news-app-expo",
+    "slug": "news-app-expo-joaomarcolino",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.joaomarcolino.newsappexpo"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +22,17 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "package": "com.joaomarcolino.newsappexpo",
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "owner": "joao.marcolinooo",
+    "extra": {
+      "eas": {
+        "projectId": "5e28b6ef-c365-45f9-b792-dbc757743a89"
+      }
     }
   }
 }
